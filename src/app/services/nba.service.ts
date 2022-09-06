@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs/internal/Observable';
+import { map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -11,10 +13,10 @@ export class NbaService {
     return this.http.get('https://www.balldontlie.io/api/v1/teams');
   }
 
-  getPlayers(name: string) {
-    return this.http.get(
-      `https://www.balldontlie.io/api/v1/players?search=${name}`
-    );
+  getPlayer(name: string): Observable<any[]> {
+    return this.http
+      .get(`https://www.balldontlie.io/api/v1/players?search=${name}`)
+      .pipe(map((response) => (response as any).data)) as Observable<[]>;
   }
 
   getStats() {
@@ -25,7 +27,7 @@ export class NbaService {
 
   getStats2() {
     return this.http.get(
-      `https://www.balldontlie.io/api/v1/stats?seasons[]=2021&player_ids[]=115&postseason=true`
+      `https://www.balldontlie.io/api/v1/stats?seasons[]=2002&player_ids[]=1043&postseason=true`
     );
   }
 }

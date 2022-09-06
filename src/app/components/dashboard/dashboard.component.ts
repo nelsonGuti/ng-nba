@@ -1,5 +1,19 @@
 import { Component, OnInit } from '@angular/core';
+import {
+  debounce,
+  Subject,
+  throttleTime,
+  distinctUntilChanged,
+  Observable,
+  map,
+  interval,
+  debounceTime,
+  switchMap,
+  take,
+  takeUntil,
+} from 'rxjs';
 import { NbaService } from 'src/app/services/nba.service';
+import { DashboardStore } from './dashboard.store';
 
 @Component({
   selector: 'app-dashboard',
@@ -8,22 +22,34 @@ import { NbaService } from 'src/app/services/nba.service';
 })
 export class DashboardComponent implements OnInit {
   playerName = '';
-  constructor(private nbaService: NbaService) {}
+  players = [];
+  results$: Observable<any> | undefined;
+  subject = new Subject();
+  vm$ = this.store.vm$;
+  constructor(private nbaService: NbaService, private store: DashboardStore) {}
 
   ngOnInit() {
-    this.nbaService.getTeams().subscribe((data) => {
-      console.log('data: ', data);
-    });
+    this.results$ = this.subject.pipe(
+      debounceTime(500),
 
-    this.nbaService.getStats2().subscribe((data) => {
-      console.log('data: ', data);
-    });
+      map((searchTerm: any) => {
+        console.log('searchTerm: ', searchTerm);
+
+        return this.nbaService.getPlayer(searchTerm);
+      }),
+      switchMap((response: any) => {
+        return response.pipe(map((players: any) => players.data));
+      })
+    );
   }
 
-  searchPlayer() {
-    console.log(this.playerName);
-    this.nbaService.getPlayers(this.playerName).subscribe((data) => {
-      console.log('data: ', data);
-    });
+  searchPlayer(searchTerm: string) {
+    console.log('searchTerm: ', searchTerm);
+    this.store.getPlayers$(searchTerm);
+    this.subject.next(searchTerm);
+  }
+
+  clearInput() {
+    this.store.setPlayers([]);
   }
 }

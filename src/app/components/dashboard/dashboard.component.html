@@ -2,12 +2,23 @@
   <mat-form-field class="example-full-width" appearance="fill">
     <mat-label>Search player</mat-label>
     <input
+      #searchInput
       matInput
       placeholder="Kobe Bryant"
-      [(ngModel)]="playerName"
       name="player"
-      (keyup.enter)="searchPlayer()"
+      (keyup.enter)="searchPlayer(searchInput.value)"
     />
-    <mat-icon (click)="playerName = ''" matSuffix>clear</mat-icon>
+    <mat-icon (click)="searchInput.value = ''; clearInput()" matSuffix
+      >clear</mat-icon
+    >
   </mat-form-field>
 </form>
+
+<ng-container *ngIf="vm$ | async as vm">
+  <div class="player-cards-container">
+    <app-player-card
+      *ngFor="let player of vm.players"
+      [player]="player"
+    ></app-player-card>
+  </div>
+</ng-container>

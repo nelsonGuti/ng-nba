@@ -1,0 +1,11 @@
+<mat-card>
+  <mat-card-title
+    >{{ player?.first_name }} {{ player.last_name }} 🏀</mat-card-title
+  >
+  <mat-card-subtitle>{{ player?.team?.name || "NBA Team" }}</mat-card-subtitle>
+  <mat-card-actions align="end">
+    <button mat-button>See Stats</button>
+    <button mat-button>Set as favorite</button>
+  </mat-card-actions>
+</mat-card>
+<br />
